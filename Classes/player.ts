@@ -1,4 +1,5 @@
 import { Game } from "./game";
+import { WebSocket } from "ws";
 
 export class Player {
     name: string;
@@ -9,7 +10,7 @@ export class Player {
     radius: number;
     speed: number;
     angle: number; // between 0 and 360
-    ws: WebSocket;
+    ws;
 
     lastShoot = 0
     shootCooldown = 2;
@@ -23,7 +24,7 @@ export class Player {
      */
     deltaTime: number = 0;
 
-    constructor(name: string, id: string, ws: WebSocket) {
+    constructor(name: string, id: string, ws) {
         this.name = name;
         this.id = id;
         this.points = 0;

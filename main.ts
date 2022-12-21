@@ -1,15 +1,25 @@
 import { WebSocketServer } from 'ws';
 import { Game } from './Classes/game';
 import { Player } from './Classes/player';
+import express from 'express';
+import { createServer } from 'http';
 
 /**
  * Main server websocket
  */
 
+ const app = express();
+
+ // initialize a simple http server
+ const server = createServer(app); 
+
  const wss = new WebSocketServer({
-    port: 8080
+    server
 })
 
+server.listen(8080, () => {
+    console.log(`Server started on port 8080`);
+});
 
 /**
  * Main object to work on
@@ -32,21 +42,22 @@ wss.on('connection', (ws)=>{
     })
 
     ws.on('message', (data)=>{
+        data = JSON.parse(data.toString())
         if(!connected) {
-            if(data.type === "connect" && checkConnection(data)) {
-                player = new Player(data.name, data.id, ws)
+            if(data["type"] === "connect" && checkConnection(data)) {
+                player = new Player(data["name"], data["id"], ws)
                 game.addPlayer(player);
                 connected = true;
             }
         } else {
-            if(data.type == "angle" && checkAngle(data)) {
-                player.angle = data.value;
+            if(data["type"] == "angle" && checkAngle(data)) {
+                player.angle = data["value"];
             }
-            else if(data.type == "shoot" && checkShoot(data)) {
+            else if(data["type"] == "shoot" && checkShoot(data)) {
                 game.playerShoot(player);
             }
-            else if(data.type == "move" && checkMove(data)) {
-                player.move(data.angle);
+            else if(data["type"] == "move" && checkMove(data)) {
+                player.move(data["angle"]);
             }
         }
     })
@@ -70,20 +81,21 @@ if(process.argv.length < 3) {
      * Main game loop
      */
     let time = Date.now();
+    /*
     while(game.gameRunning) {
-        /**
-         * Handle time between two frames
-         */
+
+        //Handle time between two frames
+         
         let newTime = Date.now();
         let deltaTime = newTime - time;
         time = newTime;
         
-        /**
-         * Call main loop execution
-         */
+        
+        // Call main loop execution
+         
         game.executeStep(deltaTime);
 
-    }
+    }*/
 
 }
 
